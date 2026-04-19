@@ -17,7 +17,6 @@ import java.util.Map;
 
 public class ThrowListener implements Listener {
 
-    private static final String PERM = "throwinpeeps.throw";
 
     private final ThrowinPeepsPlugin plugin;
     private final Map<String, String> carrying = new HashMap<>();
@@ -31,10 +30,6 @@ public class ThrowListener implements Listener {
         this.plugin = plugin;
     }
 
-    private boolean isOptedOut(String name) {
-        return plugin.optedOut.contains(name);
-    }
-
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         Player carrier = event.getPlayer();
@@ -45,18 +40,10 @@ public class ThrowListener implements Listener {
 
         if (carrier.equals(target)) return;
 
-        if (!carrier.hasPermission(PERM)) {
-            carrier.sendMessage(ChatColor.RED + "You don't have permission to pick up players.");
-            return;
-        }
+        if (!plugin.throwEnabled.contains(carrier.getName())) return;
 
         if (carrying.containsKey(carrier.getName())) {
             carrier.sendMessage(ChatColor.RED + "You're already carrying someone! Sneak to throw first.");
-            return;
-        }
-
-        if (isOptedOut(target.getName())) {
-            carrier.sendMessage(ChatColor.RED + target.getName() + " has opted out of being picked up.");
             return;
         }
 
@@ -125,6 +112,7 @@ public class ThrowListener implements Listener {
         carrying.values().remove(name);
 
         clearImmunity(name);
+        plugin.removeThrowEnabled(name);
     }
 
     private void scheduleImmunityExpiry(final String playerName) {

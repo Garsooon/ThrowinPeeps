@@ -7,12 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -21,15 +15,10 @@ public class ThrowinPeepsPlugin extends JavaPlugin implements CommandExecutor {
 
     private static final Logger log = Logger.getLogger("Minecraft");//lazy
     private ThrowListener throwListener;
-    final Set<String> optedOut = new HashSet<>();
-    private File optedOutFile;
+    final Set<String> throwEnabled = new HashSet<>();
 
     @Override
     public void onEnable() {
-        optedOutFile = new File(getDataFolder(), "opted-out.txt");
-        getDataFolder().mkdirs();
-        loadOptedOut();
-
         throwListener = new ThrowListener(this);
         getServer().getPluginManager().registerEvents(throwListener, this);
         getCommand("throwinpeeps").setExecutor(this);
@@ -65,45 +54,18 @@ public class ThrowinPeepsPlugin extends JavaPlugin implements CommandExecutor {
         }
 
         String name = player.getName();
-        if (optedOut.contains(name)) {
-            optedOut.remove(name);
-            player.sendMessage(ChatColor.GREEN + "You can now be picked up by other players.");
+        if (throwEnabled.contains(name)) {
+            throwEnabled.remove(name);
+            player.sendMessage(ChatColor.RED + "Throw ability disabled.");
         } else {
-            optedOut.add(name);
-            player.sendMessage(ChatColor.RED + "You have opted out of being picked up.");
+            throwEnabled.add(name);
+            player.sendMessage(ChatColor.GREEN + "Throw ability enabled.");
         }
 
-        saveOptedOut();
         return true;
     }
 
-    private void loadOptedOut() {
-        if (!optedOutFile.exists()) return;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(optedOutFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (!line.isEmpty()) {
-                    optedOut.add(line);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            log.warning("[ThrowinPeeps] Failed to load opted-out list: " + e.getMessage());
-        }
-    }
-
-    private void saveOptedOut() {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(optedOutFile));
-            for (String name : optedOut) {
-                writer.write(name);
-                writer.newLine();
-            }
-            writer.close();
-        } catch (IOException e) {
-            log.warning("[ThrowinPeeps] Failed to save opted-out list: " + e.getMessage());
-        }
+    void removeThrowEnabled(String name) {
+        throwEnabled.remove(name);
     }
 }
