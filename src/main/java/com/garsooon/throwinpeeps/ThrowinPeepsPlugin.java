@@ -48,11 +48,6 @@ public class ThrowinPeepsPlugin extends JavaPlugin implements CommandExecutor {
             return true;
         }
 
-        if (args.length == 0 || !args[0].equalsIgnoreCase("toggle")) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /throwinpeeps toggle");
-            return true;
-        }
-
         String name = player.getName();
         if (throwEnabled.contains(name)) {
             throwEnabled.remove(name);
