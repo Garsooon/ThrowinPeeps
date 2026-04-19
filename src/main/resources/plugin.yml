@@ -1,17 +1,16 @@
 name: ThrowinPeeps
+version: 1.1
 main: com.garsooon.throwinpeeps.ThrowinPeepsPlugin
 description: Pick up and throw players. Thrown players take no fall damage.
 author: Garsooon
 
 commands:
   throwinpeeps:
-    description: Toggle whether you can be picked up by other players.
-    usage: /throwinpeeps toggle
+    description: Toggle whether you can pickup players.
+    permission: throwinpeeps.toggle
+    usage: /throwinpeeps
 
 permissions:
-  throwinpeeps.throw:
-    description: Allows picking up and throwing players.
-    default: op
   throwinpeeps.toggle:
-    description: Allows toggling your own pickup status.
+    description: Allows toggling the throw ability on/off.
     default: op
